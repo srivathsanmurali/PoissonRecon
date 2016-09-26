@@ -5,7 +5,7 @@ PR_SOURCE=CmdLineParser.cpp Factor.cpp Geometry.cpp MarchingCubes.cpp PlyFile.cp
 SR_SOURCE=CmdLineParser.cpp Factor.cpp Geometry.cpp MarchingCubes.cpp PlyFile.cpp SSDRecon.cpp
 ST_SOURCE=CmdLineParser.cpp Factor.cpp Geometry.cpp MarchingCubes.cpp PlyFile.cpp SurfaceTrimmer.cpp
 
-CFLAGS += -fopenmp -Wno-deprecated -Wno-write-strings -std=c++11
+CFLAGS += -fopenmp -Wno-deprecated -Wno-write-strings -std=c++11# -D_OpenMP=1
 LFLAGS += -lgomp -lstdc++
 
 CFLAGS_DEBUG = -DDEBUG -g3

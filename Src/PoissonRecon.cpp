@@ -8,14 +8,14 @@ are permitted provided that the following conditions are met:
 Redistributions of source code must retain the above copyright notice, this list of
 conditions and the following disclaimer. Redistributions in binary form must reproduce
 the above copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the distribution. 
+in the documentation and/or other materials provided with the distribution.
 
 Neither the name of the Johns Hopkins University nor the names of its contributors
 may be used to endorse or promote products derived from this software without specific
-prior written permission. 
+prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES 
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES
 OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
 SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
@@ -159,7 +159,7 @@ cmdLineFloat
 	SamplesPerNode( "samplesPerNode" , 1.5f ) ,
 	Scale( "scale" , 1.1f ) ,
 	CGSolverAccuracy( "cgAccuracy" , float(1e-3) ) ,
-	LowResIterMultiplier( "iterMultiplier" , 1.f ) , 
+	LowResIterMultiplier( "iterMultiplier" , 1.f ) ,
 	PointWeight( "pointWeight" , 4.f );
 
 
@@ -261,7 +261,7 @@ void ShowUsage(char* ex)
 
 #ifndef FOR_RELEASE
 	printf( "\t[--%s]\n" , ASCII.name );
-	
+
 	printf( "\t[--%s]\n" , NoComments.name );
 
 #ifndef FAST_COMPILE
@@ -288,7 +288,7 @@ const PlyProperty ColorInfo< float >::PlyProperties[] =
 	{ "r"     , PLY_UCHAR , PLY_FLOAT , int( offsetof( Point3D< float > , coords[0] ) ) , 0 , 0 , 0 , 0 } ,
 	{ "g"     , PLY_UCHAR , PLY_FLOAT , int( offsetof( Point3D< float > , coords[1] ) ) , 0 , 0 , 0 , 0 } ,
 	{ "b"     , PLY_UCHAR , PLY_FLOAT , int( offsetof( Point3D< float > , coords[2] ) ) , 0 , 0 , 0 , 0 } ,
-	{ "red"   , PLY_UCHAR , PLY_FLOAT , int( offsetof( Point3D< float > , coords[0] ) ) , 0 , 0 , 0 , 0 } , 
+	{ "red"   , PLY_UCHAR , PLY_FLOAT , int( offsetof( Point3D< float > , coords[0] ) ) , 0 , 0 , 0 , 0 } ,
 	{ "green" , PLY_UCHAR , PLY_FLOAT , int( offsetof( Point3D< float > , coords[1] ) ) , 0 , 0 , 0 , 0 } ,
 	{ "blue"  , PLY_UCHAR , PLY_FLOAT , int( offsetof( Point3D< float > , coords[2] ) ) , 0 , 0 , 0 , 0 }
 };
@@ -298,7 +298,7 @@ const PlyProperty ColorInfo< double >::PlyProperties[] =
 	{ "r"     , PLY_UCHAR , PLY_DOUBLE , int( offsetof( Point3D< double > , coords[0] ) ) , 0 , 0 , 0 , 0 } ,
 	{ "g"     , PLY_UCHAR , PLY_DOUBLE , int( offsetof( Point3D< double > , coords[1] ) ) , 0 , 0 , 0 , 0 } ,
 	{ "b"     , PLY_UCHAR , PLY_DOUBLE , int( offsetof( Point3D< double > , coords[2] ) ) , 0 , 0 , 0 , 0 } ,
-	{ "red"   , PLY_UCHAR , PLY_DOUBLE , int( offsetof( Point3D< double > , coords[0] ) ) , 0 , 0 , 0 , 0 } , 
+	{ "red"   , PLY_UCHAR , PLY_DOUBLE , int( offsetof( Point3D< double > , coords[0] ) ) , 0 , 0 , 0 , 0 } ,
 	{ "green" , PLY_UCHAR , PLY_DOUBLE , int( offsetof( Point3D< double > , coords[1] ) ) , 0 , 0 , 0 , 0 } ,
 	{ "blue"  , PLY_UCHAR , PLY_DOUBLE , int( offsetof( Point3D< double > , coords[2] ) ) , 0 , 0 , 0 , 0 }
 };
@@ -378,18 +378,21 @@ XForm4x4< Real > GetPointXForm( OrientedPointStream< Real >& stream , Real scale
 {
 	Point3D< Real > min , max;
 	stream.boundingBox( min , max );
+  fprintf( stderr , "[Debug] ==\n");
 	Point3D< Real > center = ( max + min ) / 2;
 	Real scale = std::max< Real >( max[0]-min[0] , std::max< Real >( max[1]-min[1] , max[2]-min[2] ) );
 	scale *= scaleFactor;
 	for( int i=0 ; i<3 ; i++ ) center[i] -= scale/2;
 	XForm4x4< Real > tXForm = XForm4x4< Real >::Identity() , sXForm = XForm4x4< Real >::Identity();
 	for( int i=0 ; i<3 ; i++ ) sXForm(i,i) = (Real)(1./scale ) , tXForm(3,i) = -center[i];
+  fprintf( stderr , "[Debug] ==\n");
 	return sXForm * tXForm;
 }
 
 template< class Real , int Degree , BoundaryType BType , class Vertex >
 int _Execute( int argc , char* argv[] )
 {
+  fprintf( stderr , "[Debug] Starting\n");
 	typedef typename Octree< Real >::template InterpolationInfo< false > InterpolationInfo;
 	typedef OrientedPointStream< Real > PointStream;
 	typedef OrientedPointStreamWithData< Real , Point3D< Real > > PointStreamWithData;
@@ -423,6 +426,7 @@ int _Execute( int argc , char* argv[] )
 	}
 	else xForm = XForm4x4< Real >::Identity();
 
+  fprintf( stderr , "[Debug] Starting SPR\n");
 	DumpOutput2( comments , "Running Screened Poisson Reconstruction (Version 9.0)\n" );
 	char str[1024];
 	for( int i=0 ; i<paramNum ; i++ )
@@ -445,7 +449,7 @@ int _Execute( int argc , char* argv[] )
 		return 0;
 	}
 	if( !MaxSolveDepth.set ) MaxSolveDepth.value = Depth.value;
-	
+
 	OctNode< TreeNodeData >::SetAllocator( MEMORY_ALLOCATOR_BLOCK_SIZE );
 
 	int kernelDepth = KernelDepth.set ? KernelDepth.value : Depth.value-2;
@@ -482,19 +486,26 @@ int _Execute( int argc , char* argv[] )
 			else                                    pointStream = new  ASCIIOrientedPointStream< Real >( In.value );
 		}
 		delete[] ext;
+    fprintf( stderr , "[Debug] Point Stream generated\n");
 		XPointStream _pointStream( xForm , *pointStream );
+    fprintf( stderr , "[Debug] --0\n");
 		xForm = GetPointXForm( _pointStream , (Real)Scale.value ) * xForm;
+    fprintf( stderr , "[Debug] -0\n");
+    fprintf( stderr , "[Debug] 0\n");
 		if( sampleData )
 		{
 			XPointStreamWithData _pointStream( xForm , ( PointStreamWithData& )*pointStream );
 			pointCount = tree.template init< Point3D< Real > >( _pointStream , Depth.value , Confidence.set , *samples , sampleData );
+      fprintf( stderr , "[Debug] 0--\n");
 		}
 		else
 		{
 			XPointStream _pointStream( xForm , *pointStream );
 			pointCount = tree.template init< Point3D< Real > >( _pointStream , Depth.value , Confidence.set , *samples , sampleData );
+      fprintf( stderr , "[Debug] 0-\n");
 		}
 		iXForm = xForm.inverse();
+    fprintf( stderr , "[Debug] Deleting PC\n");
 		delete pointStream;
 #pragma omp parallel for num_threads( Threads.value )
 		for( int i=0 ; i<(int)samples->size() ; i++ ) (*samples)[i].sample.data.n *= (Real)-1;
@@ -518,6 +529,7 @@ int _Execute( int argc , char* argv[] )
 			*density = tree.template setDensityEstimator< WEIGHT_DEGREE >( *samples , kernelDepth , SamplesPerNode.value );
 			profiler.dumpOutput2( comments , "#   Got kernel density:" );
 		}
+    fprintf( stderr , "[Debug] 1\n");
 
 		// Transform the Hermite samples into a vector field [If discarding, compute anew. Otherwise, compute once.]
 		{
@@ -526,6 +538,7 @@ int _Execute( int argc , char* argv[] )
 			*normalInfo = tree.template setNormalField< NORMAL_DEGREE >( *samples , *density , pointWeightSum , BType==BOUNDARY_NEUMANN );
 			profiler.dumpOutput2( comments , "#     Got normal field:" );
 		}
+    fprintf( stderr , "[Debug] 2\n");
 
 		if( !Density.set ) delete density , density = NULL;
 
@@ -542,6 +555,7 @@ int _Execute( int argc , char* argv[] )
 			profiler.dumpOutput2( comments , "#       Finalized tree:" );
 		}
 
+    fprintf( stderr , "[Debug] 3\n");
 		// Add the FEM constraints
 		{
 			profiler.start();
@@ -550,6 +564,7 @@ int _Execute( int argc , char* argv[] )
 			profiler.dumpOutput2( comments , "#  Set FEM constraints:" );
 		}
 
+    fprintf( stderr , "[Debug] 4\n");
 		// Free up the normal info [If we don't need it for subseequent iterations.]
 		delete normalInfo , normalInfo = NULL;
 
@@ -561,6 +576,7 @@ int _Execute( int argc , char* argv[] )
 			tree.template addInterpolationConstraints< Degree , BType >( *iInfo , constraints , solveDepth );
 			profiler.dumpOutput2( comments , "#Set point constraints:" );
 		}
+    fprintf( stderr , "[Debug] 5\n");
 
 		DumpOutput( "Leaf Nodes / Active Nodes / Ghost Nodes: %d / %d / %d\n" , (int)tree.leaves() , (int)tree.nodes() , (int)tree.ghostNodes() );
 		DumpOutput( "Memory Usage: %.3f MB\n" , float( MemoryInfo::Usage())/(1<<20) );
